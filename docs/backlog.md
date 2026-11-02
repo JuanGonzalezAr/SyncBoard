@@ -80,7 +80,7 @@ Las siguientes 5 tareas quedan como reserva para ampliaciones, recuperación o t
 | **T36** | Resumen de métricas de tareas por columna en tarjetas de Dashboard | Mejora | Baja | [Issue #36](https://github.com/manolovillarreal/SyncBoard/issues/36) | Luis Fernando Parra Castilla |
 | **T37** | Deshabilitar botón de asignación si no hay otros integrantes | Ajuste | Baja | [Issue #37](https://github.com/manolovillarreal/SyncBoard/issues/37) | Luisa Fernanda Garcia Gallego |
 | **T38** | Botón para alternar visibilidad de contraseña en AuthPage | Ajuste | Baja | [Issue #38](https://github.com/manolovillarreal/SyncBoard/issues/38) | Juan Sebastian Lopez Martinez |
-| **T39** | Exportar tareas del proyecto a formato CSV descargable | Mejora | Media-baja | [Issue #39](https://github.com/manolovillarreal/SyncBoard/issues/39) | Juan Sebastian Gonzalez Arcila |
+| **T39** | Exportar tareas del proyecto a formato CSV descargable | Mejora | Media-baja | [Issue #39](https://github.com/manolovillarreal/SyncBoard/issues/39) | Juan Sebastian Gonzalez Arcila — *En revisión (PR pendiente)* |
 | **T40** | Indicador de tiempo restante de expiración en invitaciones recibidas | Ajuste | Baja | [Issue #40](https://github.com/manolovillarreal/SyncBoard/issues/40) | *Reserva (Sin asignar)* |
 | **T41** | Atajo de teclado N en KanbanBoard para crear nueva tarea | Mejora | Baja | [Issue #41](https://github.com/manolovillarreal/SyncBoard/issues/41) | *Completada (PR #41)* |
 | **T42** | Alerta visual cuando una tarea no tiene responsable asignado | Ajuste | Baja | [Issue #42](https://github.com/manolovillarreal/SyncBoard/issues/42) | Jose Trujillo |

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Project, ProjectMember } from '../../types/database.types';
+import { Project, ProjectMember, Task } from '../../types/database.types';
 import { useAuth } from '../auth/AuthContext';
 import { X, Settings, Users, Trash2, AlertTriangle, UserMinus } from 'lucide-react';
 import { sanitizeTitle } from '../../lib/validators';
+import { exportTasksToCSV } from '../../lib/csvExport';
+import { Download } from 'lucide-react';
 
 interface ProjectSettingsModalProps {
   project: Project;
@@ -33,6 +35,7 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const isOwner = user?.id === project.owner_id;
+  const [exporting, setExporting] = useState(false);
 
   const fetchMembers = async () => {
     setLoadingMembers(true);
@@ -134,6 +137,26 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
       setMembers(prev => prev.filter(m => m.user_id !== targetUserId));
     } catch (err: any) {
       setErrorMsg(err.message || 'No se pudo retirar al integrante.');
+    }
+  };
+
+  const handleExportCSV = async () => {
+    setExporting(true);
+    setErrorMsg(null);
+    try {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('*')
+        .eq('project_id', project.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      exportTasksToCSV((data as Task[]) || [], members, project.name);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'No se pudieron exportar las tareas.');
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -288,6 +311,27 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                 );
               })
             )}
+          </div>
+        </div>
+
+        {/* Exportación de tareas (T39) */}
+        <div className="pt-4 border-t border-slate-200 mb-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h4 className="text-sm font-semibold text-slate-800">Exportar tareas</h4>
+              <p className="text-xs text-slate-500">
+                Descarga un archivo CSV con título, descripción, estado, prioridad, responsable y fecha límite.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleExportCSV}
+              disabled={exporting}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-lg transition disabled:opacity-50 flex-shrink-0"
+            >
+              <Download className="w-4 h-4" />
+              {exporting ? 'Exportando...' : 'Exportar CSV'}
+            </button>
           </div>
         </div>
 
