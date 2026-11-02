@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { Task, TaskStatus } from '../../types/database.types';
-import { formatPriority, getPriorityBadgeClass, formatDate } from '../../lib/formatters';
+import { formatPriority, getPriorityBadgeClass, getPriorityDescription, formatDate } from '../../lib/formatters';
 import { Calendar, User, ChevronLeft, ChevronRight, Edit2, Trash2 } from 'lucide-react';
 
 interface TaskCardProps {
@@ -32,6 +32,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     return null;
   };
 
+  const priorityDescriptionId = useId();
+  const priorityDescription = getPriorityDescription(task.priority);
+
   const prevStatus = getPreviousStatus(task.status);
   const nextStatus = getNextStatus(task.status);
 
@@ -41,11 +44,17 @@ export const TaskCard: React.FC<TaskCardProps> = ({
         {/* Cabecera de la tarjeta: Prioridad y Acciones */}
         <div className="flex items-center justify-between gap-2 mb-2">
           <span
-            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${getPriorityBadgeClass(
+            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border cursor-help ${getPriorityBadgeClass(
               task.priority
             )}`}
+            title={priorityDescription}
+            aria-describedby={priorityDescriptionId}
           >
             {formatPriority(task.priority)}
+          </span>
+          {/* Descripción extendida para lectores de pantalla (T47) */}
+          <span id={priorityDescriptionId} className="sr-only">
+            {`Prioridad ${formatPriority(task.priority)}: ${priorityDescription}`}
           </span>
 
           <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition">

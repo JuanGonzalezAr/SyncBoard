@@ -26,6 +26,19 @@ export const formatPriority = (priority: TaskPriority): string => {
   }
 };
 
+export const getPriorityDescription = (priority: TaskPriority): string => {
+  switch (priority) {
+    case 'high':
+      return 'Atención inmediata requerida';
+    case 'medium':
+      return 'Progreso regular del sprint';
+    case 'low':
+      return 'Tarea complementaria o de baja urgencia';
+    default:
+      return '';
+  }
+};
+
 export const getPriorityBadgeClass = (priority: TaskPriority): string => {
   switch (priority) {
     case 'high':
