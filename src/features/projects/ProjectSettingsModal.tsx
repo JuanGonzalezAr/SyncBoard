@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Project, ProjectMember } from '../../types/database.types';
 import { useAuth } from '../auth/AuthContext';
-import { X, Settings, Users, Trash2, AlertTriangle, UserMinus } from 'lucide-react';
+import { X, Settings, Users, Trash2, AlertTriangle, UserMinus, Copy, Check } from 'lucide-react';
 import { sanitizeTitle } from '../../lib/validators';
 
 interface ProjectSettingsModalProps {
@@ -31,6 +31,9 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [memberEmails, setMemberEmails] = useState<Record<string, string>>({});
+  const [copiedUserId, setCopiedUserId] = useState<string | null>(null);
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isOwner = user?.id === project.owner_id;
 
@@ -80,13 +83,63 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
     }
   };
 
+  // Correos conocidos de los integrantes (T35).
+  // profiles no guarda correos; se obtienen del correo de la sesión actual y de
+  // los eventos 'member_joined' del historial, que registran el correo con el
+  // que cada integrante aceptó su invitación.
+  const fetchMemberEmails = async () => {
+    const emails: Record<string, string> = {};
+    try {
+      const { data, error } = await supabase
+        .from('activity_log')
+        .select('actor_id, details')
+        .eq('project_id', project.id)
+        .eq('action', 'member_joined');
+
+      if (!error && data) {
+        for (const log of data as any[]) {
+          const email = log?.details?.email;
+          if (log?.actor_id && typeof email === 'string' && email) {
+            emails[log.actor_id] = email;
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error cargando correos de integrantes:', err);
+    }
+
+    if (user?.id && user.email) {
+      emails[user.id] = user.email;
+    }
+    setMemberEmails(emails);
+  };
+
+  const handleCopyEmail = async (targetUserId: string, email: string) => {
+    try {
+      await navigator.clipboard.writeText(email);
+      setCopiedUserId(targetUserId);
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => setCopiedUserId(null), 1500);
+    } catch (err) {
+      setErrorMsg('No se pudo copiar el correo al portapapeles.');
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       setName(project.name);
       setDescription(project.description || '');
       setConfirmDelete(false);
       setErrorMsg(null);
+      setCopiedUserId(null);
       fetchMembers();
+      fetchMemberEmails();
     }
   }, [isOpen, project]);
 
@@ -245,6 +298,8 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
               members.map((m) => {
                 const displayName = (m.profiles as any)?.display_name || 'Usuario';
                 const isMemberOwner = m.role === 'owner';
+                const memberEmail = memberEmails[m.user_id];
+                const isCopied = copiedUserId === m.user_id;
                 return (
                   <div
                     key={m.user_id}
@@ -254,10 +309,39 @@ export const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({
                       <div className="w-7 h-7 rounded-full bg-teal-100 text-teal-800 font-bold text-xs flex items-center justify-center">
                         {displayName.charAt(0).toUpperCase()}
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <span className="text-sm font-medium text-slate-800">{displayName}</span>
                         {m.user_id === user?.id && (
                           <span className="ml-1 text-[11px] text-slate-400">(Tú)</span>
+                        )}
+                        {memberEmail && (
+                          <div className="flex items-center gap-1">
+                            <span className="text-[11px] text-slate-500 truncate max-w-[180px]">{memberEmail}</span>
+                            <div className="relative">
+                              <button
+                                type="button"
+                                onClick={() => handleCopyEmail(m.user_id, memberEmail)}
+                                className="p-0.5 text-slate-400 hover:text-teal-600 rounded transition"
+                                title="Copiar correo"
+                                aria-label={`Copiar correo de ${displayName}`}
+                              >
+                                {isCopied ? (
+                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                ) : (
+                                  <Copy className="w-3.5 h-3.5" />
+                                )}
+                              </button>
+                              {isCopied && (
+                                <span
+                                  role="status"
+                                  aria-live="polite"
+                                  className="absolute z-10 left-full ml-1 top-1/2 -translate-y-1/2 whitespace-nowrap px-1.5 py-0.5 text-[10px] font-semibold text-white bg-slate-800 rounded shadow"
+                                >
+                                  ¡Copiado!
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         )}
                       </div>
                     </div>

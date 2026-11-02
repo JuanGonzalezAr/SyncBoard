@@ -76,7 +76,7 @@ Las siguientes 5 tareas quedan como reserva para ampliaciones, recuperación o t
 | **T32** | Avatar con iniciales y color determinista para integrantes | Ajuste | Baja | [Issue #32](https://github.com/manolovillarreal/SyncBoard/issues/32) | Jose Trujillo |
 | **T33** | Indicador de progreso del proyecto (% de tareas completadas) | Mejora | Baja | [Issue #33](https://github.com/manolovillarreal/SyncBoard/issues/33) | Thomas Hoyos Carmona |
 | **T34** | Filtro de proyectos por nombre en el buscador de Dashboard | Ajuste | Baja | [Issue #34](https://github.com/manolovillarreal/SyncBoard/issues/34) | Jose Trujillo |
-| **T35** | Confirmación visual al copiar correo de invitación en modal | Ajuste | Baja | [Issue #35](https://github.com/manolovillarreal/SyncBoard/issues/35) | Juan Sebastian Gonzalez Arcila |
+| **T35** | Confirmación visual al copiar correo de invitación en modal | Ajuste | Baja | [Issue #35](https://github.com/manolovillarreal/SyncBoard/issues/35) | Juan Sebastian Gonzalez Arcila — *En revisión (PR pendiente)* |
 | **T36** | Resumen de métricas de tareas por columna en tarjetas de Dashboard | Mejora | Baja | [Issue #36](https://github.com/manolovillarreal/SyncBoard/issues/36) | Luis Fernando Parra Castilla |
 | **T37** | Deshabilitar botón de asignación si no hay otros integrantes | Ajuste | Baja | [Issue #37](https://github.com/manolovillarreal/SyncBoard/issues/37) | Luisa Fernanda Garcia Gallego |
 | **T38** | Botón para alternar visibilidad de contraseña en AuthPage | Ajuste | Baja | [Issue #38](https://github.com/manolovillarreal/SyncBoard/issues/38) | Juan Sebastian Lopez Martinez |
